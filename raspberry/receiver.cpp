@@ -2,6 +2,7 @@
 #include <RF24/RF24.h>
 #include <chrono>
 #include <iomanip>
+#include <ctime>
 #include <thread>
 #include <string>
 #include <sstream>
@@ -91,6 +92,31 @@ public:
     return 0;
   }
 
+  static string FormatMessageJSON(const InterpretedSample& interpretedSample)
+  {
+    stringstream ss;
+    
+    time_t now = time(0);
+    tm *ltm = localtime(&now);
+
+    ss << "{\"date\":\"" << std::put_time(ltm, "%F") << "\"";
+    ss << ", {\"timestamp\":\"" << std::put_time(ltm, "%s") << "\"";
+    
+    if(interpretedSample.hasTemp1)
+    {
+      ss << ", \"air\":";
+      ss << interpretedSample.temp1_F;
+    }
+    
+    if(interpretedSample.hasTemp2)
+    {
+      ss << ", \"meat\":";
+      ss << dec << interpretedSample.temp2_F;
+    }
+  
+    return ss.str();  
+  }
+
   static string FormatMessage(const InterpretedSample& interpretedSample)
   {
     stringstream ss;
@@ -108,7 +134,8 @@ public:
 
   void Publish(const InterpretedSample& interpretedSample)
   {
-    string msg = FormatMessage(interpretedSample);
+    //string msg = FormatMessage(interpretedSample);
+    string msg = FormatMessageJSON(interpretedSample);
 
     int rc = mosquitto_publish(
       mosq,
