@@ -100,7 +100,7 @@ public:
     tm *ltm = localtime(&now);
 
     ss << "{\"date\":\"" << std::put_time(ltm, "%F") << "\"";
-    ss << ", {\"timestamp\":\"" << std::put_time(ltm, "%s") << "\"";
+    ss << ", \"timestamp\":\"" << std::put_time(ltm, "%s") << "\"";
     
     if(interpretedSample.hasTemp1)
     {
@@ -113,6 +113,8 @@ public:
       ss << ", \"meat\":";
       ss << dec << interpretedSample.temp2_F;
     }
+
+    ss << "}";
   
     return ss.str();  
   }
